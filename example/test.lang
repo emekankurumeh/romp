@@ -1,1 +1,0 @@
-gcc -shared lib/fs.c m_fs.c -o fs.so -Wall -Wextra --std=gnu99 -fno-strict-aliasing -undefined dynamic_lookup

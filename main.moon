@@ -1,13 +1,12 @@
-ffi = require 'ffi'
-for cdef in *require 'cdef'
-  ffi.cdef cdef
-fs = ffi.load('fs.so')
+--requires
+fs = require 'lib.fs'
+lpeg = require 'lpeg'
 
+--caching functions
+import P,R,C,S,V from lpeg
 
+--patterns
+white = (S ' \t\r\n') ^ 0
 
 open_file = (path) ->
   base_path = tostring(path)\match('^%.?/?([%w%s%-_]+)')
-  fs.fs_setWritePath(base_path)
-  tin = ffi.new('ffs_listDir('..base_path..')')
-
-open_file('example/test.lang')

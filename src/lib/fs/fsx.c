@@ -16,11 +16,15 @@
 -- You should have received a copy of the GNU Lesser General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/lgpl.txt>. */
 
-#include <stdlib.h>
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <stdlib.h>
 #include "fs.c"
+
+#ifndef LUA
+#define LUA 51
+#endif
 
 static void checkError(lua_State *L, int err, const char *str);
 static int l_fs_mount(lua_State *L);
@@ -55,9 +59,14 @@ int luaopen_fs(lua_State *L){
     { NULL, NULL }
   };
 
+  #if LUA <= 51 || JIT
     luaL_openlib(L, "fs", reg, 0);
-    atexit(fs_deinit);
-    return 0;
+  #elif LUA > 51
+    luaL_newlib(L, reg);
+  #endif
+
+  atexit(fs_deinit);
+  return 0;
 }
 
 static void checkError(lua_State *L, int err, const char *str) {
