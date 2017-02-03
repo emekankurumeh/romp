@@ -12,10 +12,11 @@ digit = R('09')
 letter = R('AZ', 'az')
 name = (letter * (digit + letter + '_')^0) * spc
 filename = C(name * '.' * name) * spc
+dir = fs.info 'exedir'
 
 main = () ->
   print filename\match 'jasj9s90ask.sa'
-  
+
 
 open_file = (path) ->
   base_path = tostring(path)\match('^%.?/?([%w%s%-_]+)')
