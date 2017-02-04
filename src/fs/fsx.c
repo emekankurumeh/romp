@@ -51,6 +51,7 @@ static int l_fs_listDir(lua_State *L);
 static int l_fs_write(lua_State *L);
 static int l_fs_append(lua_State *L);
 static int l_fs_delete(lua_State *L);
+static int l_fs_chdir(lua_State *L);
 static int l_fs_makeDirs(lua_State *L);
 static int l_fs_info(lua_State *L);
 
@@ -68,6 +69,7 @@ int luaopen_fs(lua_State *L){
     { "write",        l_fs_write        },
     { "append",       l_fs_append       },
     { "delete",       l_fs_delete       },
+    { "chdir",        l_fs_chdir       },
     { "makeDirs",     l_fs_makeDirs     },
     { "info",         l_fs_info         },
     { NULL, NULL }
@@ -227,6 +229,17 @@ static int l_fs_delete(lua_State *L) {
   return 1;
 }
 
+static int l_fs_delete(lua_State *L) {
+  const char *filename = luaL_checkstring(L, 1);
+  int res = fs_delete(filename);
+  if (res != FS_ESUCCESS) {
+    lua_pushnil(L);
+    lua_pushfstring(L, "%s", fs_errorStr(res));
+    return 2;
+  }
+  lua_pushboolean(L, 1);
+  return 1;
+}
 
 static int l_fs_makeDirs(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
@@ -286,13 +299,13 @@ static int l_fs_info(lua_State *L) {
     UNUSED(dirname);
 #if _WIN32
     char buf[1024];
-    uint32_t size = sizeof(buf);
+    size_t size = sizeof(buf);
     ASSERT( getcwd(buf, &size) != NULL );
     dirname(buf);
     lua_pushfstring(L, "%s", buf);
 #elif __linux__
     char buf[1024];
-    uint32_t size = sizeof(buf);
+    size_t size = sizeof(buf);
     ASSERT( getcwd(buf, &size) != NULL );
     dirname(buf);
     lua_pushfstring(L, "%s", buf);
@@ -301,7 +314,7 @@ static int l_fs_info(lua_State *L) {
     lua_pushfstring(L, ".");
 #elif __APPLE__
     char buf[1024];
-    uint32_t size = sizeof(buf);
+    size_t size = sizeof(buf);
     ASSERT( getcwd(buf, &size) != NULL );
     dirname(buf);
     lua_pushfstring(L, "%s", buf);

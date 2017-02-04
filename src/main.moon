@@ -25,8 +25,7 @@ main = () ->
   data  = fs.read 'romp'
   for line in data\gmatch '[^\n]+'
     inf = ps.parse data
-    print fs.info('wrkdir')
-    os.execute inf.exec\gsub '%%f', fs.info('wrkdir') .. '/' .. inf.name
+    os.execute inf.exec\gsub '%%f', fs.info('wrkdir') .. '/' .. arg[1] .. '/' .. inf.name
     print '[compiled: %s]'\format inf.name
     print '[time: %0.2fs]'\format os.clock! - start
 
