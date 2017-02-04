@@ -1,1 +1,2 @@
 main.c | gcc %f -> %b
+foo.c  | gcc %f -> %b

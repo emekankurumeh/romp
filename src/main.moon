@@ -1,22 +1,27 @@
---requires
 package.cpath = package.cpath .. ';./fs/?.so;'
+
 fs = require 'fs'
-lpeg = require 'lpeg'
+fl = require 'flags'
+ps = require 'parse'
+import p from require 'moon'
 
---caching functions
-import P, R, C, S, V from lpeg
+usage = [[usage: romp [dir]
+    -w <d> watch directory for changes
+    -h print this message
+]]
 
---patterns
-spc = S(" \t\n")^0
-digit = R('09')
-letter = R('AZ', 'az')
-name = (letter * (digit + letter + '_')^0) * spc
-filename = C(name * '.' * name) * spc
-dir = fs.info 'exedir'
+arg = fl.parse usage
+arg[1] or= fs.info 'exedir'
 
 main = () ->
-  print filename\match 'jasj9s90ask.sa'
-
+  if arg.h
+    print usage
+    os.exit!
+  fs.setWritePath(arg[1])
+  fs.mount(arg[1])
+  print "no romp file" unless fs.exists('romp')
+  data  = fs.read('romp')
+  ps.parse data
 
 open_file = (path) ->
   base_path = tostring(path)\match('^%.?/?([%w%s%-_]+)')
