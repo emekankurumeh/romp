@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -47,5 +47,6 @@ int fs_write(const char *filename, const void *data, int size);
 int fs_append(const char *filename, const void *data, int size);
 int fs_delete(const char *filename);
 int fs_makeDirs(const char *path);
+int fs_removeDirs(const char *path);
 
 #endif

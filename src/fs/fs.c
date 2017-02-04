@@ -24,7 +24,7 @@
 #include "fs.h"
 
 #if _WIN32
-  #define mkdir(path, mode) mkdir(path)
+  #define mkdir(path, mode) _mkdir(path)
 #endif
 
 typedef struct PathNode {
