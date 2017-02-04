@@ -30,7 +30,8 @@ main = () ->
     os.execute inf.exec\gsub '%%f', fs.info('wrkdir') .. '/' .. open_file(arg[1]) .. '/' .. inf.name
     print '[compiled: %s]'\format inf.name
     print '[time: %0.2fs]'\format os.clock! - start
-    fs.delete(fs.info('wrkdir') .. '/' .. open_file(arg[1]) .. '/ddk/')
+    -- fs.rmdir('ddk')
+    fs.delete('ds')
 
 open_file = (path) ->
   print path

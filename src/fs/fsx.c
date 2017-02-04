@@ -95,6 +95,7 @@ static void checkError(lua_State *L, int err, const char *str) {
   luaL_error(L, "%s '%s'", fs_errorStr(err), str);
 }
 
+
 static char *dirname(char *str) {
   char *p = str + strlen(str);
   while (p != str) {
@@ -106,6 +107,7 @@ static char *dirname(char *str) {
   }
   return str;
 }
+
 
 static int l_fs_mount(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
@@ -231,6 +233,7 @@ static int l_fs_delete(lua_State *L) {
   return 1;
 }
 
+
 static int l_fs_rmdir(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
   int res = fs_rmdir(path);
@@ -240,16 +243,14 @@ static int l_fs_rmdir(lua_State *L) {
   return 0;
 }
 
+
 static int l_fs_chdir(lua_State *L) {
-  const char *filename = luaL_checkstring(L, 1);
-  int res = fs_delete(filename);
+  const char *path = luaL_checkstring(L, 1);
+  int res = fs_chdir(path);
   if (res != FS_ESUCCESS) {
-    lua_pushnil(L);
-    lua_pushfstring(L, "%s", fs_errorStr(res));
-    return 2;
+    luaL_error(L, "%s '%s'", fs_errorStr(res), path);
   }
-  lua_pushboolean(L, 1);
-  return 1;
+  return 0;
 }
 
 

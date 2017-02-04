@@ -26,6 +26,7 @@
 #if _WIN32
   #define mkdir(path, mode) _mkdir(path)
   #define rmdir(path, mode) _rmdir(path)
+  #define chdir(path, mode) _chdir(path)
 #endif
 
 typedef struct PathNode {
@@ -42,6 +43,7 @@ enum {
   PATH_TDIR,
   PATH_TZIP
 };
+
 
 static char *concat(const char *str, ...) {
   va_list args;
@@ -106,6 +108,7 @@ end:
   return err;
 }
 
+
 static int removeDirs(const char *path) {
   int err = FS_ESUCCESS;
   char *str = concat(path, "/", NULL);
@@ -120,7 +123,7 @@ static int removeDirs(const char *path) {
     if (isSeparator(*p)) {
       *p = '\0';
       if (!isDir(str)) {
-        if (rmdir(str, S_IRWXU) == -1) {
+        if (rmdir(str) == -1) {
           err = FS_ECANTRMDIR;
           goto end;
         }
@@ -133,6 +136,7 @@ end:
   free(str);
   return err;
 }
+
 
 static PathNode *newNode(const char *path) {
   int res;
@@ -193,6 +197,7 @@ const char *fs_errorStr(int err) {
     case FS_ECANTWRITE    : return "could not write file";
     case FS_ECANTDELETE   : return "could not delete file";
     case FS_ECANTMKDIR    : return "could not make directory";
+    case FS_ECANTRMDIR    : return "could not remove directory";
     case FS_ENOTEXIST     : return "file or directory does not exist";
     default               : return "unknown error";
   }
@@ -310,7 +315,6 @@ static int fileInfo(
 }
 
 
-
 int fs_exists(const char *filename) {
   return fileInfo(filename, NULL, NULL, NULL) == FS_ESUCCESS;
 }
@@ -386,6 +390,7 @@ static fs_FileListNode *newFileListNode(const char *path) {
   return n;
 }
 
+
 static int appendFileListNode(fs_FileListNode **list, const char *path) {
   fs_FileListNode **n = list;
   while (*n) {
@@ -397,6 +402,7 @@ static int appendFileListNode(fs_FileListNode **list, const char *path) {
   return FS_ESUCCESS;
 }
 
+
 static int containsSeparator(const char *str) {
   const char *p = str;
   while (*p) {
@@ -404,6 +410,7 @@ static int containsSeparator(const char *str) {
   }
   return 0;
 }
+
 
 fs_FileListNode *fs_listDir(const char *path) {
   char *pathTrimmed = NULL;
@@ -514,6 +521,7 @@ static int writeUsingMode(
   return (res == 1) ? FS_ESUCCESS : FS_ECANTWRITE;
 }
 
+
 int fs_write(const char *filename, const void *data, int size) {
   return writeUsingMode(filename, "wb", data, size);
 }
@@ -548,7 +556,17 @@ int fs_mkdir(const char *path) {
 
 int fs_rmdir(const char *path) {
   if (!writePath) return FS_ENOWRITEPATH;
-  if (checkFilename(path) != FS_ESUCCESS) return FS_EBADFILENAME;
+  char *name = concat(writePath->path, "/", path, NULL);
+  printf("dev: %s\n", name);
+  if (!name) return FS_EOUTOFMEM;
+  int res = removeDirs(name);
+  free(name);
+  return res;
+}
+
+
+int fs_chdir(const char *path) {
+  if (!writePath) return FS_ENOWRITEPATH;
   char *name = concat(writePath->path, "/", path, NULL);
   if (!name) return FS_EOUTOFMEM;
   int res = removeDirs(name);

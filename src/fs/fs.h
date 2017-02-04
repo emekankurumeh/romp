@@ -28,8 +28,8 @@ enum {
   FS_ECANTWRITE   = -8,
   FS_ECANTDELETE  = -9,
   FS_ECANTMKDIR   = -10,
-  FS_ENOTEXIST    = -11,
   FS_ECANTRMDIR   = -11,
+  FS_ENOTEXIST    = -12,
 };
 
 const char *fs_errorStr(int err);
@@ -49,5 +49,6 @@ int fs_append(const char *filename, const void *data, int size);
 int fs_delete(const char *filename);
 int fs_mkdir(const char *path);
 int fs_rmdir(const char *path);
+int fs_chdir(const char *path);
 
 #endif
