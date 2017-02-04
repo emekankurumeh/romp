@@ -1,3 +1,5 @@
+local open_file
+
 package.cpath = package.cpath .. ';./fs/?.so;'
 start = os.clock!
 
@@ -25,12 +27,14 @@ main = () ->
   data  = fs.read 'romp'
   for line in data\gmatch '[^\n]+'
     inf = ps.parse data
-    os.execute inf.exec\gsub '%%f', fs.info('wrkdir') .. '/' .. arg[1] .. '/' .. inf.name
+    os.execute inf.exec\gsub '%%f', fs.info('wrkdir') .. '/' .. open_file(arg[1]) .. '/' .. inf.name
     print '[compiled: %s]'\format inf.name
     print '[time: %0.2fs]'\format os.clock! - start
 
 open_file = (path) ->
-  base_path = tostring(path)\match('^%.?/?([%w%s%-_]+)')
+  print path
+  base_path = tostring(path)\match('^%.-/-([%w%s%-_]+)')
+  print base_path
   return base_path
 
 main()
