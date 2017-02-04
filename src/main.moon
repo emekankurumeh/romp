@@ -30,11 +30,11 @@ main = () ->
     os.execute inf.exec\gsub '%%f', fs.info('wrkdir') .. '/' .. open_file(arg[1]) .. '/' .. inf.name
     print '[compiled: %s]'\format inf.name
     print '[time: %0.2fs]'\format os.clock! - start
+    fs.delete(fs.info('wrkdir') .. '/' .. open_file(arg[1]) .. '/ddk/')
 
 open_file = (path) ->
   print path
   base_path = tostring(path)\match('^%.-/-([%w%s%-_]+)')
-  print base_path
   return base_path
 
 main()

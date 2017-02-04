@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -29,6 +29,7 @@ enum {
   FS_ECANTDELETE  = -9,
   FS_ECANTMKDIR   = -10,
   FS_ENOTEXIST    = -11,
+  FS_ECANTRMDIR   = -11,
 };
 
 const char *fs_errorStr(int err);
@@ -46,6 +47,7 @@ void fs_freeFileList(fs_FileListNode *list);
 int fs_write(const char *filename, const void *data, int size);
 int fs_append(const char *filename, const void *data, int size);
 int fs_delete(const char *filename);
-int fs_makeDirs(const char *path);
+int fs_mkdir(const char *path);
+int fs_rmdir(const char *path);
 
 #endif
