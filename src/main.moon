@@ -1,4 +1,5 @@
 package.cpath = package.cpath .. ';./fs/?.so;'
+start = os.clock!
 
 fs = require 'fs'
 fl = require 'flags'
@@ -12,6 +13,7 @@ usage = [[usage: romp [dir]
 
 arg = fl.parse usage
 arg[1] or= fs.info 'exedir'
+inf = {}
 
 main = () ->
   if arg.h
@@ -19,11 +21,17 @@ main = () ->
     os.exit!
   fs.setWritePath(arg[1])
   fs.mount(arg[1])
-  print "no romp file" unless fs.exists('romp')
-  data  = fs.read('romp')
-  ps.parse data
+  print "no romp file" unless fs.exists 'romp'
+  data  = fs.read 'romp'
+  for line in data\gmatch '[^\n]+'
+    inf = ps.parse data
+    print fs.info('wrkdir')
+    os.execute inf.exec\gsub '%%f', fs.info('wrkdir') .. '/' .. inf.name
+    print '[compiled: %s]'\format inf.name
+    print '[time: %0.2fs]'\format os.clock! - start
 
 open_file = (path) ->
   base_path = tostring(path)\match('^%.?/?([%w%s%-_]+)')
+  return base_path
 
 main()

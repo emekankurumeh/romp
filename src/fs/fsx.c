@@ -25,6 +25,8 @@
 
 #if _WIN32
   #include <windows.h>
+  #include <direct.h>
+  #define getcwd _getcwd
 #elif __linux__
   #include <unistd.h>
 #elif __APPLE__
@@ -274,6 +276,33 @@ static int l_fs_info(lua_State *L) {
     char buf[1024];
     uint32_t size = sizeof(buf);
     ASSERT( _NSGetExecutablePath(buf, &size) == 0 );
+    dirname(buf);
+    lua_pushfstring(L, "%s", buf);
+#else
+    lua_pushfstring(L, ".");
+#endif
+
+  } else if (!strcmp(str, "wrkdir")) {
+    UNUSED(dirname);
+#if _WIN32
+    char buf[1024];
+    uint32_t size = sizeof(buf);
+    ASSERT( getcwd(buf, &size) != NULL );
+    dirname(buf);
+    lua_pushfstring(L, "%s", buf);
+#elif __linux__
+    char buf[1024];
+    uint32_t size = sizeof(buf);
+    ASSERT( getcwd(buf, &size) != NULL );
+    dirname(buf);
+    lua_pushfstring(L, "%s", buf);
+#elif __FreeBSD__
+    /* TODO : Implement this */
+    lua_pushfstring(L, ".");
+#elif __APPLE__
+    char buf[1024];
+    uint32_t size = sizeof(buf);
+    ASSERT( getcwd(buf, &size) != NULL );
     dirname(buf);
     lua_pushfstring(L, "%s", buf);
 #else
