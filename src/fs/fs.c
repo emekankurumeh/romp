@@ -25,8 +25,7 @@
 
 #if _WIN32
   #define mkdir(path, mode) _mkdir(path)
-  #define rmdir(path, mode) _rmdir(path)
-  #define chdir(path, mode) _chdir(path)
+  #define chdir(path) _chdir(path)
 #endif
 
 typedef struct PathNode {
@@ -109,7 +108,7 @@ end:
 }
 
 
-static int removeDirs(const char *path) {
+static int changeDirs(const char *path) {
   int err = FS_ESUCCESS;
   char *str = concat(path, "/", NULL);
   char *p = str;
@@ -122,9 +121,9 @@ static int removeDirs(const char *path) {
   while (*p) {
     if (isSeparator(*p)) {
       *p = '\0';
-      if (!isDir(str)) {
-        if (rmdir(str, S_IRWXU) == -1) {
-          err = FS_ECANTRMDIR;
+      if (isDir(str)) {
+        if (chdir(str) == -1) {
+          err = FS_ECANTCHDIR;
           goto end;
         }
       }
@@ -197,7 +196,7 @@ const char *fs_errorStr(int err) {
     case FS_ECANTWRITE    : return "could not write file";
     case FS_ECANTDELETE   : return "could not delete file";
     case FS_ECANTMKDIR    : return "could not make directory";
-    case FS_ECANTRMDIR    : return "could not remove directory";
+    case FS_ECANTCHDIR    : return "could not change directory";
     case FS_ENOTEXIST     : return "file or directory does not exist";
     default               : return "unknown error";
   }
@@ -554,12 +553,12 @@ int fs_mkdir(const char *path) {
 }
 
 
-int fs_rmdir(const char *path) {
+int fs_chdir(const char *path) {
   if (!writePath) return FS_ENOWRITEPATH;
+  if (checkFilename(path) != FS_ESUCCESS) return FS_EBADFILENAME;
   char *name = concat(writePath->path, "/", path, NULL);
-  printf("dev: %s\n",name);
   if (!name) return FS_EOUTOFMEM;
-  int res = removeDirs(name);
+  int res = changeDirs(name);
   free(name);
   return res;
 }
