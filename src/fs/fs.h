@@ -49,6 +49,5 @@ int fs_append(const char *filename, const void *data, int size);
 int fs_delete(const char *filename);
 int fs_mkdir(const char *path);
 int fs_rmdir(const char *path);
-int fs_chdir(const char *path);
 
 #endif

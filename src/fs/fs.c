@@ -123,7 +123,7 @@ static int removeDirs(const char *path) {
     if (isSeparator(*p)) {
       *p = '\0';
       if (!isDir(str)) {
-        if (rmdir(str) == -1) {
+        if (rmdir(str, S_IRWXU) == -1) {
           err = FS_ECANTRMDIR;
           goto end;
         }
@@ -557,17 +557,7 @@ int fs_mkdir(const char *path) {
 int fs_rmdir(const char *path) {
   if (!writePath) return FS_ENOWRITEPATH;
   char *name = concat(writePath->path, "/", path, NULL);
-  printf("dev: %s\n", name);
-  if (!name) return FS_EOUTOFMEM;
-  int res = removeDirs(name);
-  free(name);
-  return res;
-}
-
-
-int fs_chdir(const char *path) {
-  if (!writePath) return FS_ENOWRITEPATH;
-  char *name = concat(writePath->path, "/", path, NULL);
+  printf("dev: %s\n",name);
   if (!name) return FS_EOUTOFMEM;
   int res = removeDirs(name);
   free(name);

@@ -52,7 +52,6 @@ static int l_fs_write(lua_State *L);
 static int l_fs_append(lua_State *L);
 static int l_fs_delete(lua_State *L);
 static int l_fs_rmdir(lua_State *L);
-static int l_fs_chdir(lua_State *L);
 static int l_fs_mkdir(lua_State *L);
 static int l_fs_info(lua_State *L);
 
@@ -71,7 +70,6 @@ int luaopen_fs(lua_State *L){
     { "append",       l_fs_append       },
     { "delete",       l_fs_delete       },
     { "rmdir",        l_fs_rmdir        },
-    { "chdir",        l_fs_chdir        },
     { "mkdir",        l_fs_mkdir        },
     { "info",         l_fs_info         },
     { NULL, NULL }
@@ -242,17 +240,6 @@ static int l_fs_rmdir(lua_State *L) {
   }
   return 0;
 }
-
-
-static int l_fs_chdir(lua_State *L) {
-  const char *path = luaL_checkstring(L, 1);
-  int res = fs_chdir(path);
-  if (res != FS_ESUCCESS) {
-    luaL_error(L, "%s '%s'", fs_errorStr(res), path);
-  }
-  return 0;
-}
-
 
 static int l_fs_mkdir(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
